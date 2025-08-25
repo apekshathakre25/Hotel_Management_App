@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     _id: {
         type: String,
         required: true
@@ -18,11 +18,13 @@ const userSchema = mongoose.Schema({
         required: true
     },
     role: {
-        enum: ["user", "hotelOwner"], default: "user"
+        type: String,
+        enum: ["user", "hotelOwner"],
+        default: "user"
     }
 }, {
-    timeStamps: true
-})
+    timestamps: true  
+});
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 export default User;
