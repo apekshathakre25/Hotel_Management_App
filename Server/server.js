@@ -10,10 +10,13 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(cors())
-app.use(express.json())
 app.use(clerkMiddleware())
 
-app.use("/api/clerk", clerkWebHooks)
+
+app.use("/api/clerk", express.raw({ type: 'application/json' }), clerkWebHooks)
+
+
+app.use(express.json())
 
 app.get("/", (req, res) => {
     res.status(200).send("Server is running 🚀")
