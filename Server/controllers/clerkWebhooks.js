@@ -3,7 +3,7 @@ import { Webhook } from "svix"
 
 const clerkWebHooks = async (req, res) => {
     try {
-        const Whook = new Webhook(process.env.SIGNIN_SECREAT)
+        const Whook = new Webhook(process.env.SIGNIN_SECRET)
 
         const headers = {
             "svix-id": req.headers["svix-id"],
@@ -26,29 +26,18 @@ const clerkWebHooks = async (req, res) => {
         console.log('Webhook event type:', type)
         console.log('User data:', data)
 
-        // Validate required data fields
-        if (!data.email_addresses || !data.email_addresses[0] || !data.email_addresses[0].email_address) {
-            console.log('Missing email address in webhook data')
-            return res.status(400).json({ success: false, message: "Missing email address" })
-        }
-
         const userData = {
             _id: data.id,
             email: data.email_addresses[0].email_address,
-            username: (data.first_name || '') + " " + (data.last_name || ''),
-            image: data.image_url || '',
+            username: data.first_name + " " + data.last_name,
+            image: data.image_url,
         }
 
         switch (type) {
             case "user.created": {
                 console.log('Creating new user:', userData)
-                try {
-                    const newUser = await User.create(userData)
-                    console.log('User created successfully:', newUser)
-                } catch (dbError) {
-                    console.log('Database error creating user:', dbError.message)
-                    return res.status(500).json({ success: false, message: "Database error: " + dbError.message })
-                }
+                const newUser = await User.create(userData)
+                console.log('User created successfully:', newUser)
                 break;
             }
             case "user.updated": {
